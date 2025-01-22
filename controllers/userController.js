@@ -1,8 +1,9 @@
 const { User } = require('../models'); // Import model User
 const bcrypt = require('bcrypt'); // Import bcrypt untuk hashing password
 const jwt = require('jsonwebtoken'); // Import JWT untuk token
+require('dotenv').config(); // Import dotenv dan aktifkan konfigurasi
 
-const SECRET_KEY = 'e3439d2cde6f6a069a099e70e012f16616990c1fdd73bf2f00deea595d26d3dca5890f258224f9d4f435b7e55cc6728cc5a52802644349e32314ec31785a74aa'; // Ganti dengan key rahasia Anda
+const SECRET_KEY = process.env.JWT_SECRET
 
 const registerUser = async (req, res) => {
   const { username, password, role } = req.body;
