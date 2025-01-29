@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Kereta.init({
+    id_kereta: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
     nama_kereta: DataTypes.STRING,
     deskripsi: DataTypes.TEXT,
     kelas: DataTypes.STRING

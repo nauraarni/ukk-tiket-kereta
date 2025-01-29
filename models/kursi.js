@@ -15,7 +15,10 @@ module.exports = (sequelize, DataTypes) => {
   }
   Kursi.init({
     no_kursi: DataTypes.STRING,
-    id_gerbong: DataTypes.INTEGER
+    id_gerbong: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
   }, {
     sequelize,
     modelName: 'Kursi',

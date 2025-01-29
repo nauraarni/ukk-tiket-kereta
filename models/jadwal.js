@@ -19,7 +19,10 @@ module.exports = (sequelize, DataTypes) => {
     tanggal_berangkat: DataTypes.DATE,
     tanggal_kedatangan: DataTypes.DATE,
     harga: DataTypes.DOUBLE,
-    id_kereta: DataTypes.INTEGER
+    id_kereta: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
   }, {
     sequelize,
     modelName: 'Jadwal',

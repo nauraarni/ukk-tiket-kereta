@@ -23,6 +23,17 @@ const createPelanggan = async (req, res) => {
   }
 };
 
+// Get all pelanggan
+const getAllPelanggan = async (req, res) => {
+  try {
+    const pelanggans = await Pelanggan.findAll(); // Mengambil semua pelanggan
+    res.status(200).json({ data: pelanggans });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching pelanggan', error: error.message });
+  }
+};
+
+
 // Get all pelanggan for the authenticated user
 const getPelangganByUser = async (req, res) => {
   const id_user = req.user.id; // Ambil id_user dari JWT melalui middleware
@@ -37,12 +48,11 @@ const getPelangganByUser = async (req, res) => {
 
 // Update pelanggan by ID
 const updatePelanggan = async (req, res) => {
-  const { id } = req.params; // ID pelanggan
+  const { id_user } = req.params; // ID pelanggan
   const { nik, nama_penumpang, alamat, telp } = req.body;
-  const id_user = req.user.id; // Ambil id_user dari JWT melalui middleware
 
   try {
-    const pelanggan = await Pelanggan.findOne({ where: { id_user, id } });
+    const pelanggan = await Pelanggan.findByPk(id_user);
 
     if (!pelanggan) {
       return res.status(404).json({ message: 'Pelanggan not found' });
@@ -70,7 +80,7 @@ const deletePelanggan = async (req, res) => {
   const id_user = req.user.id; // Ambil id_user dari JWT melalui middleware
 
   try {
-    const pelanggan = await Pelanggan.findOne({ where: { id_user, id } });
+    const pelanggan = await Pelanggan.findByPk(id_user);
 
     if (!pelanggan) {
       return res.status(404).json({ message: 'Pelanggan not found' });
