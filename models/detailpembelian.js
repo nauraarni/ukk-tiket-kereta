@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Detailpembelian.init({
+    id_detail_tiket :{
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
     nik: DataTypes.STRING,
     nama_penumpang: DataTypes.STRING,
     id_pembelian_tiket: DataTypes.INTEGER,

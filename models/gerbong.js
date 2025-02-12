@@ -14,12 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Gerbong.init({
-    nama_gerbong: DataTypes.STRING,
-    kuota: DataTypes.INTEGER,
-    id_kereta: {
+    id_gerbong : {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
+    nama_gerbong: DataTypes.STRING,
+    kuota: DataTypes.INTEGER,
+    id_kereta: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Gerbong',

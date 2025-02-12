@@ -14,9 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Pembeliantiket.init({
+    id_pembelian_tiket: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     tanggal_pembelian: DataTypes.DATE,
     id_pelanggan: DataTypes.INTEGER,
-    id_jadwal: DataTypes.INTEGER
+    id_jadwal: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'Pembeliantiket',

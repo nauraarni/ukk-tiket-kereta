@@ -14,11 +14,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Kursi.init({
-    no_kursi: DataTypes.STRING,
-    id_gerbong: {
+    id_kursi :{
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
+    no_kursi: DataTypes.STRING,
+    id_gerbong: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Kursi',
