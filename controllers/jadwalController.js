@@ -25,8 +25,8 @@ const getAllJadwals = async (req, res) => {
 // READ: Ambil Jadwal Berdasarkan ID Kereta
 const getJadwalByIdKereta = async (req, res) => {
   try {
-    const { id_kereta } = req.params;
-    const jadwal = await Jadwal.findOne({ where: { id_kereta } });
+    const { id_jadwal } = req.params;
+    const jadwal = await Jadwal.findOne({ where: { id_jadwal } });
 
     if (!jadwal) {
       return res.status(404).json({ message: 'Jadwal not found' });
@@ -41,10 +41,10 @@ const getJadwalByIdKereta = async (req, res) => {
 // UPDATE: Perbarui Jadwal Berdasarkan ID Kereta
 const updateJadwal = async (req, res) => {
   try {
-    const { id_kereta } = req.params;
+    const { id_jadwal } = req.params;
     const { asal_keberangkatan, tujuan_keberangkatan, tanggal_berangkat, tanggal_kedatangan, harga } = req.body;
 
-    const jadwal = await Jadwal.findOne({ where: { id_kereta } });
+    const jadwal = await Jadwal.findOne({ where: { id_jadwal } });
     if (!jadwal) {
       return res.status(404).json({ message: 'Jadwal not found' });
     }
@@ -60,8 +60,8 @@ const updateJadwal = async (req, res) => {
 // DELETE: Hapus Jadwal Berdasarkan ID Kereta
 const deleteJadwal = async (req, res) => {
   try {
-    const { id_kereta } = req.params;
-    const jadwal = await Jadwal.findOne({ where: { id_kereta } });
+    const { id_jadwal } = req.params;
+    const jadwal = await Jadwal.findOne({ where: { id_jadwal } });
 
     if (!jadwal) {
       return res.status(404).json({ message: 'Jadwal not found' });

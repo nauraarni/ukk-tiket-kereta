@@ -70,7 +70,7 @@ const loginUser = async (req, res) => {
       user: {
         id: user.id_user,
         username: user.username,
-        role: user.role,
+        // role: user.role,
       },
     });
   } catch (error) {

@@ -3,7 +3,7 @@ const { Pelanggan } = require('../models');
 // Create a new pelanggan
 const createPelanggan = async (req, res) => {
   const { nik, nama_penumpang, alamat, telp } = req.body;
-  const id_user = req.user.id; // Ambil id_user dari JWT melalui middleware
+  const id_pelanggan = req.user.id; // Ambil id_pelanggan dari JWT melalui middleware
 
   try {
     const newPelanggan = await Pelanggan.create({
@@ -11,7 +11,7 @@ const createPelanggan = async (req, res) => {
       nama_penumpang,
       alamat,
       telp,
-      id_user,
+      id_pelanggan,
     });
 
     res.status(201).json({
@@ -36,10 +36,11 @@ const getAllPelanggan = async (req, res) => {
 
 // Get all pelanggan for the authenticated user
 const getPelangganByUser = async (req, res) => {
-  const id_user = req.user.id; // Ambil id_user dari JWT melalui middleware
+  // const id_pelanggan = req.user.id; // Ambil id_pelanggan dari JWT melalui middleware
+  const { id_pelanggan } = req.params;
 
   try {
-    const pelanggans = await Pelanggan.findAll({ where: { id_user } });
+    const pelanggans = await Pelanggan.findAll({ where: { id_pelanggan } });
     res.status(200).json({ data: pelanggans });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching pelanggan', error: error.message });
@@ -48,11 +49,11 @@ const getPelangganByUser = async (req, res) => {
 
 // Update pelanggan by ID
 const updatePelanggan = async (req, res) => {
-  const { id_user } = req.params; // ID pelanggan
+  const { id_pelanggan } = req.params; // ID pelanggan
   const { nik, nama_penumpang, alamat, telp } = req.body;
 
   try {
-    const pelanggan = await Pelanggan.findByPk(id_user);
+    const pelanggan = await Pelanggan.findByPk(id_pelanggan);
 
     if (!pelanggan) {
       return res.status(404).json({ message: 'Pelanggan not found' });
@@ -77,10 +78,10 @@ const updatePelanggan = async (req, res) => {
 // Delete pelanggan by ID
 const deletePelanggan = async (req, res) => {
   const { id } = req.params;
-  const id_user = req.user.id; // Ambil id_user dari JWT melalui middleware
+  const id_pelanggan = req.user.id; // Ambil id_pelanggan dari JWT melalui middleware
 
   try {
-    const pelanggan = await Pelanggan.findByPk(id_user);
+    const pelanggan = await Pelanggan.findByPk(id_pelanggan);
 
     if (!pelanggan) {
       return res.status(404).json({ message: 'Pelanggan not found' });
@@ -96,6 +97,7 @@ const deletePelanggan = async (req, res) => {
 
 module.exports = {
   createPelanggan,
+  getAllPelanggan,
   getPelangganByUser,
   updatePelanggan,
   deletePelanggan,

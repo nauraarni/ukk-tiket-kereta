@@ -4,8 +4,10 @@ const router = express.Router();
 const authenticateUser = require('../middleware/isUser')
 
 router.post('/', authenticateUser, pelangganController.createPelanggan);
-router.get('/', authenticateUser, pelangganController.getPelangganByUser);
-router.put('/:id_user', authenticateUser, pelangganController.updatePelanggan);
-router.delete('/:id_user', authenticateUser, pelangganController.deletePelanggan);
+router.get('/getAll', authenticateUser, pelangganController.getAllPelanggan);
+router.get('/:id_pelanggan', authenticateUser, pelangganController.getPelangganByUser);
+router.put('/:id_pelanggan', authenticateUser, pelangganController.updatePelanggan);
+router.delete('/:id_pelanggan', authenticateUser, pelangganController.deletePelanggan);
+
 
 module.exports = router;

@@ -10,13 +10,17 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Detailpembelian.belongsTo(models.Pembeliantiket, {
+        foreignKey: "id_pembelian_tiket",
+        as: "pembelian_tiket"
+      });
     }
   }
   Detailpembelian.init({
-    id_detail_tiket :{
+    id_detail_pembelian :{
       type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true
     },
     nik: DataTypes.STRING,
     nama_penumpang: DataTypes.STRING,

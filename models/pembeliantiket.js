@@ -10,13 +10,17 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Pembeliantiket.hasMany(models.Detailpembelian, {
+        foreignKey: "id_pembelian_tiket",
+        as: "detail_pembelian"
+      });
     }
   }
   Pembeliantiket.init({
     id_pembelian_tiket: {
       type: DataTypes.INTEGER,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     tanggal_pembelian: DataTypes.DATE,
     id_pelanggan: DataTypes.INTEGER,

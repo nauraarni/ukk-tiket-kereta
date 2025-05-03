@@ -2,10 +2,10 @@ const { Petugas } = require('../models');
 
 // Create a new petugas
 const createPetugas = async (req, res) => {
-  const { nama_petugas, alamat, telp, id_user } = req.body;
+  const { nama_petugas, alamat, telp, id_petugas } = req.body;
 
   try {
-    const newPetugas = await Petugas.create({ nama_petugas, alamat, telp, id_user });
+    const newPetugas = await Petugas.create({ nama_petugas, alamat, telp, id_petugas });
     res.status(201).json({
       message: 'Petugas created successfully',
       data: newPetugas,
@@ -27,15 +27,11 @@ const getAllPetugas = async (req, res) => {
 
 // Get petugas by ID
 const getPetugasById = async (req, res) => {
-  const { id_user } = req.params;
+  // const id_pelanggan = req.user.id; // Ambil id_pelanggan dari JWT melalui middleware
+  const { id_petugas } = req.params;
 
   try {
-    const petugas = await Petugas.findByPk(id_user);
-
-    if (!petugas) {
-      return res.status(404).json({ message: 'Petugas not found' });
-    }
-
+    const petugas = await Petugas.findAll({ where: { id_petugas } });
     res.status(200).json({ data: petugas });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching petugas', error: error.message });
@@ -44,11 +40,11 @@ const getPetugasById = async (req, res) => {
 
 // Update petugas by ID
 const updatePetugas = async (req, res) => {
-  const { id_user } = req.params;
+  const { id_petugas } = req.params;
   const { nama_petugas, alamat, telp } = req.body;
 
   try {
-    const petugas = await Petugas.findByPk(id_user);
+    const petugas = await Petugas.findByPk(id_petugas);
 
     if (!petugas) {
       return res.status(404).json({ message: 'Petugas not found' });
@@ -71,10 +67,10 @@ const updatePetugas = async (req, res) => {
 
 // Delete petugas by ID
 const deletePetugas = async (req, res) => {
-  const { id_user } = req.params;
+  const { id_petugas } = req.params;
 
   try {
-    const petugas = await Petugas.findByPk(id_user);
+    const petugas = await Petugas.findByPk(id_petugas);
 
     if (!petugas) {
       return res.status(404).json({ message: 'Petugas not found' });
