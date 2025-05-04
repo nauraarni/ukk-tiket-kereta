@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "id_pembelian_tiket",
         as: "pembelian_tiket"
       });
+      Detailpembelian.belongsTo(models.Kursi, {
+        foreignKey: "id_kursi",
+        as: "kursi"
+      });
     }
   }
   Detailpembelian.init({

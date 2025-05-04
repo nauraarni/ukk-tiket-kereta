@@ -261,76 +261,160 @@ const cetakPDFById = async (req, res) => {
   }
 };
 
-const getHistoryByUser = async (req, res) => {
-  try {
-    const { id_pelanggan } = req.params; // ambil dari parameter
-
-    if (!id_pelanggan) {
-      return res.status(400).json({ message: 'id_pelanggan harus diisi di parameter' });
-    }
-
-    const history = await Pembeliantiket.findAll({
-      where: { id_pelanggan },
-      include: [
-        {
-          model: Detailpembelian,
-          as: 'detail_pembelian', // pastikan alias sesuai di model
-          attributes: ['id_kursi', 'nik', 'nama_penumpang'],
-        },
-        {
-          model: Jadwal,
-          attributes: ['tanggal_berangkat', 'waktu_berangkat'],
-        }
-      ]
-    });
-
-    res.status(200).json({
-      message: 'Berhasil mengambil history user',
-      data: history
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: 'Gagal mengambil history',
-      error: error.message
-    });
-  }
+const isValidDate = (dateString) => {
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateString);
 };
 
-const getAllTransactionHistory = async (req, res) => {
+const isValidMonthYear = (year, month) => {
+  const yearNum = parseInt(year, 10);
+  const monthNum = parseInt(month, 10);
+  return !isNaN(yearNum) && !isNaN(monthNum) && yearNum >= 1900 && yearNum <= 9999 && monthNum >= 1 && monthNum <= 12;
+};
+
+const getHistoryPembelianByDate = async (req, res, next) => {
+  const { tanggal } = req.params;
+
+  if (!isValidDate(tanggal)) {
+    return res.status(400).json({ message: 'Format tanggal tidak valid (YYYY-MM-DD).' });
+  }
+
   try {
-    const { bulan, tahun } = req.query;
-
-    if (!bulan || !tahun) {
-      return res.status(400).json({ message: 'Harap sertakan bulan dan tahun' });
-    }
-
-    const awal = new Date(tahun, bulan - 1, 1);
-    const akhir = new Date(tahun, bulan, 0, 23, 59, 59);
+    const startDate = new Date(`${tanggal}T00:00:00.000Z`);
+    const endDate = new Date(`${tanggal}T23:59:59.999Z`);
 
     const history = await Pembeliantiket.findAll({
       where: {
-        tanggal_pembelian: {
-          [Op.between]: [awal, akhir]
-        }
+        tanggal_pembelian: { [Op.between]: [startDate, endDate] }
       },
       include: [
         {
           model: Detailpembelian,
-          include: [{ model: Kursi }]
-        },
-        {
-          model: Jadwal
+          as: 'detail_pembelian',
         }
-      ],
-      order: [['tanggal_pembelian', 'DESC']]
+      ]
     });
 
-    res.status(200).json({
-      message: 'Riwayat semua transaksi berhasil diambil',
-      data: history
-    });
+    res.json(history);
   } catch (err) {
-    res.status(500).json({ message: 'Gagal mengambil riwayat transaksi', error: err.message });
+    next(err);
+  }
+};
+
+
+const getHistoryPembelianByMonth = async (req, res, next) => {
+  const { year, month } = req.params;
+
+  if (!isValidMonthYear(year, month)) {
+    return res.status(400).json({ message: 'Format tahun dan bulan tidak valid (YYYY dan MM).' });
+  }
+
+  const startDate = new Date(`${year}-${month}-01T00:00:00.000Z`);
+  const endDate = new Date(new Date(startDate).setMonth(startDate.getMonth() + 1) - 1); // akhir bulan
+
+  try {
+    const history = await Pembeliantiket.findAll({
+      where: {
+        tanggal_pembelian: { [Op.between]: [startDate, endDate] }
+      },
+      include: [
+        {
+          model: Detailpembelian,
+          as: 'detail_pembelian',
+        }
+      ]
+    });
+
+    res.json(history);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getHistoryPembelianByPelangganId = async (req, res, next) => {
+  const { id_pelanggan } = req.params;
+
+  if (!id_pelanggan || isNaN(id_pelanggan)) {
+    return res.status(400).json({ message: 'ID pelanggan tidak valid.' });
+  }
+
+  try {
+    const history = await Pembeliantiket.findAll({
+      where: {
+        id_pelanggan: id_pelanggan
+      },
+      include: [
+        {
+          model: Detailpembelian,
+          as: 'detail_pembelian',
+        }
+      ]
+    });
+
+    res.json(history);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getRekapPemasukanPerMonth = async (req, res, next) => {
+  const { year, month } = req.params;
+
+  if (!isValidMonthYear(year, month)) {
+    return res.status(400).json({ message: 'Format tahun dan bulan tidak valid (YYYY dan MM).' });
+  }
+
+  const startDate = new Date(`${year}-${month}-01T00:00:00.000Z`);
+  const endDate = new Date(new Date(startDate).setMonth(startDate.getMonth() + 1) - 1);
+
+  try {
+    const pembelianTiket = await Pembeliantiket.findAll({
+      where: {
+        tanggal_pembelian: { [Op.between]: [startDate, endDate] }
+      },
+      attributes: ['id_pembelian_tiket', 'id_jadwal'],
+      raw: true
+    });
+
+    if (!pembelianTiket.length) {
+      return res.json({ month, year, pemasukan: 0, detailPemasukan: [] });
+    }
+
+    const jadwalIds = [...new Set(pembelianTiket.map(p => p.id_jadwal))];
+
+    if (!jadwalIds.length) {
+      return res.json({ month, year, pemasukan: 0, detailPemasukan: [] });
+    }
+
+    const jadwal = await Jadwal.findAll({
+      where: { id_jadwal: 2 },
+      attributes: ['id_jadwal', 'harga'],
+      raw: true
+    });
+
+    const detailPemasukan = [];
+    let totalPemasukan = 0;
+
+    for (const j of jadwal) {
+      const pembelianIds = pembelianTiket.map(p => p.id_pembelian_tiket);
+
+      const jumlahPembelian = await Detailpembelian.count({
+        where: { id_pembelian_tiket: pembelianIds }
+      });
+
+      const pemasukan = jumlahPembelian * j.harga;
+      totalPemasukan += pemasukan;
+
+      detailPemasukan.push({
+        id_jadwal: j.id,
+        harga_satuan: j.harga,
+        jumlah_pembelian: jumlahPembelian,
+        total_pemasukan_jadwal: pemasukan
+      });
+    }
+
+    res.json({ month, year, pemasukan: totalPemasukan, detailPemasukan });
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -338,6 +422,8 @@ module.exports = {
   cekKursi,
   orderTiket,
   cetakPDFById,
-  getHistoryByUser,
-  getAllTransactionHistory
+  getHistoryPembelianByDate,
+  getHistoryPembelianByMonth,
+  getHistoryPembelianByPelangganId,
+  getRekapPemasukanPerMonth
 };
